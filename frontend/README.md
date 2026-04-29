@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BlueDocs Frontend
 
-## Getting Started
+Next.js app for the BlueDocs map dashboard.
 
-First, run the development server:
+## Local Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set these values in `.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `NEXT_PUBLIC_MAPBOX_TOKEN`: Mapbox public token with access to Mapbox styles.
+- `NEXT_PUBLIC_API_URL`: BlueDocs API URL. Use `https://bluedocs-api.onrender.com` for the hosted backend or `http://localhost:8000` for local backend development.
+- `NEXT_PUBLIC_CONVEX_URL`: Convex deployment URL from `bun run convex:dev` or the Convex dashboard.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Then run:
 
-## Learn More
+```bash
+bun run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Simple Convex Auth
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Authentication intentionally stays simple:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Users create an account with email and password.
+- Sign-up immediately creates a session.
+- There is no email verification, no magic link, and no external auth provider.
+- Passwords must be at least 8 characters.
+- Saved projects are stored per signed-in Convex user.
 
-## Deploy on Vercel
+The auth functions live in `convex/accounts.ts`, and the session/password helpers live in `convex/lib/auth.ts`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Vercel Redeploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Create a new Vercel project from this repo and set the project root to `frontend`.
+
+Set Vercel environment variables:
+
+- `NEXT_PUBLIC_MAPBOX_TOKEN`: New Mapbox public token.
+- `NEXT_PUBLIC_API_URL`: `https://bluedocs-api.onrender.com`.
+- `CONVEX_DEPLOY_KEY`: Convex production deploy key for the new Convex deployment.
+
+The Vercel build command is configured in `vercel.json`:
+
+```bash
+npx convex deploy --cmd-url-env-var-name NEXT_PUBLIC_CONVEX_URL --cmd 'bun run build'
+```
+
+That command deploys Convex functions first, injects `NEXT_PUBLIC_CONVEX_URL` for the frontend build, then runs the Next.js production build.
+
+If email notifications are needed, set `RESEND_API_KEY` in the Convex deployment environment. Without it, notification sending is skipped.

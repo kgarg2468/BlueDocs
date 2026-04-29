@@ -10,6 +10,7 @@
 
 import type * as accounts from "../accounts.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as notifications from "../notifications.js";
 import type * as projects from "../projects.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   accounts: typeof accounts;
   "lib/auth": typeof lib_auth;
+  notifications: typeof notifications;
   projects: typeof projects;
 }>;
 

@@ -103,7 +103,26 @@ bun run dev
 Required frontend env vars:
 
 - `NEXT_PUBLIC_MAPBOX_TOKEN`
+- `NEXT_PUBLIC_API_URL` (use `https://bluedocs-api.onrender.com` for the hosted backend)
 - `NEXT_PUBLIC_CONVEX_URL` (from Convex dashboard / `convex dev`)
+
+## Redeploying the Frontend
+
+The old `bluedocs-ui.vercel.app` deployment cannot be repaired without access to its Vercel project. To redeploy, create a new Vercel project from this repo with `frontend` as the project root.
+
+The frontend includes `frontend/vercel.json`, which sets:
+
+```bash
+npx convex deploy --cmd-url-env-var-name NEXT_PUBLIC_CONVEX_URL --cmd 'bun run build'
+```
+
+Configure these Vercel environment variables:
+
+- `NEXT_PUBLIC_MAPBOX_TOKEN` — new Mapbox public token.
+- `NEXT_PUBLIC_API_URL` — `https://bluedocs-api.onrender.com`.
+- `CONVEX_DEPLOY_KEY` — Convex production deploy key for the new Convex deployment.
+
+Convex auth is intentionally simple: users sign up or sign in with email and password, and no email verification or external provider is required.
 
 ## Team
 
